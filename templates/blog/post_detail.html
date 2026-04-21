@@ -1,0 +1,102 @@
+{% extends "base/base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}{{ post.title }} — Блог{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <!-- Post -->
+    <article class="card p-4 mb-4">
+      <div class="mb-3">
+        {% for tag in post.tags.all %}
+        <a href="{% url 'blog:posts_by_tag' tag.slug %}" class="tag-badge me-1">{{ tag.name }}</a>
+        {% endfor %}
+      </div>
+      <h1 style="font-family:'Playfair Display',serif;font-size:2rem;">{{ post.title }}</h1>
+      <div class="d-flex align-items-center gap-3 my-3 text-muted small">
+        {% if post.author.profile.avatar %}
+        <img src="{{ post.author.profile.avatar.url }}" class="avatar-sm" alt=""/>
+        {% endif %}
+        <span>
+          <a href="{% url 'accounts:profile' post.author.username %}" class="text-decoration-none fw-bold text-dark">{{ post.author.username }}</a>
+          &nbsp;·&nbsp; {{ post.created_at|date:"d F Y" }}
+          &nbsp;·&nbsp; <i class="bi bi-chat"></i> {{ post.get_comment_count }}
+        </span>
+      </div>
+      {% if post.cover_image %}
+      <img src="{{ post.cover_image.url }}" class="img-fluid rounded mb-4" alt="cover" style="max-height:400px;width:100%;object-fit:cover;"/>
+      {% endif %}
+      <hr class="divider">
+      <div style="line-height:1.9;font-size:1.05rem;">{{ post.body|linebreaks }}</div>
+      {% if user == post.author %}
+      <hr class="divider">
+      <div class="d-flex gap-2">
+        <a href="{% url 'blog:post_edit' post.pk %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i> Редагувати</a>
+        <a href="{% url 'blog:post_delete' post.pk %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Видалити</a>
+      </div>
+      {% endif %}
+    </article>
+
+    <!-- Related posts -->
+    {% if related_posts %}
+    <div class="mb-4">
+      <h5 style="font-family:'Playfair Display',serif;">Схожі пости</h5>
+      <div class="row g-3 mt-1">
+        {% for rp in related_posts %}
+        <div class="col-md-4">
+          <div class="card h-100 p-3">
+            <a href="{{ rp.get_absolute_url }}" class="text-decoration-none text-dark fw-bold small">{{ rp.title }}</a>
+            <p class="text-muted small mt-1 mb-0">{{ rp.created_at|date:"d M Y" }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Comments -->
+    <div class="card p-4">
+      <h5 class="mb-4" style="font-family:'Playfair Display',serif;">
+        <i class="bi bi-chat-square-text"></i> Коментарі ({{ post.get_comment_count }})
+      </h5>
+
+      {% for comment in comments %}
+      <div class="d-flex gap-3 mb-3 pb-3 border-bottom">
+        {% if comment.author.profile.avatar %}
+        <img src="{{ comment.author.profile.avatar.url }}" class="avatar-sm flex-shrink-0" alt=""/>
+        {% else %}
+        <div class="avatar-sm flex-shrink-0 bg-secondary d-flex align-items-center justify-content-center rounded-circle text-white fw-bold">
+          {{ comment.author.username|first|upper }}
+        </div>
+        {% endif %}
+        <div class="flex-grow-1">
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="fw-bold small">
+              <a href="{% url 'accounts:profile' comment.author.username %}" class="text-decoration-none text-dark">{{ comment.author.username }}</a>
+            </span>
+            <span class="text-muted small">{{ comment.created_at|date:"d M Y, H:i" }}</span>
+          </div>
+          <p class="mb-0 mt-1">{{ comment.body }}</p>
+          {% if user == comment.author %}
+          <a href="{% url 'blog:comment_delete' comment.pk %}" class="text-danger small" onclick="return confirm('Видалити коментар?')"><i class="bi bi-trash"></i> Видалити</a>
+          {% endif %}
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-muted">Коментарів ще немає. Будьте першим!</p>
+      {% endfor %}
+
+      <hr class="divider">
+      {% if user.is_authenticated %}
+      <h6 class="mb-3">Залишити коментар</h6>
+      <form method="post">
+        {% csrf_token %}
+        {{ comment_form|crispy }}
+        <button type="submit" class="btn btn-accent mt-2">Відправити</button>
+      </form>
+      {% else %}
+      <p class="text-muted"><a href="{% url 'accounts:login' %}">Увійдіть</a>, щоб залишити коментар.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

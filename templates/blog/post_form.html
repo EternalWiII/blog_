@@ -1,0 +1,20 @@
+{% extends "base/base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}{{ action }} пост — Блог{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card p-4">
+      <h2 style="font-family:'Playfair Display',serif;" class="mb-4">{{ action }} пост</h2>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="d-flex gap-2 mt-3">
+          <button type="submit" class="btn btn-accent">{{ action }}</button>
+          <a href="{% if post %}{{ post.get_absolute_url }}{% else %}{% url 'blog:post_list' %}{% endif %}" class="btn btn-outline-secondary">Скасувати</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

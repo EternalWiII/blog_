@@ -1,0 +1,6 @@
+{% extends "base/base.html" %}
+{% block title %}#{{ tag.name }} — Блог{% endblock %}
+{% block content %}
+<h2 style="font-family:'Playfair Display',serif;" class="mb-4">Тег: <span style="color:var(--accent);">#{{ tag.name }}</span></h2>
+{% include "blog/post_list.html" %}
+{% endblock %}
