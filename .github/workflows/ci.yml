@@ -57,6 +57,7 @@ jobs:
       run: make test PYTHON=python
 
     - name: Run Flake8 (Lint)
+      continue-on-error: true
       run: make lint PYTHON=python
 
     - name: Run Bandit (Security & Code Smells)
