@@ -10,6 +10,36 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: "blog_db"
+          POSTGRES_USER: "blog_user"
+          POSTGRES_PASSWORD: "12345"
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      SECRET_KEY: "cd$!m=y+#rv4_17i0ph%pbb=-5ncvq45ff^=mlgx0h02l+#j2"
+      DEBUG: "True"
+      DB_NAME: "blog_db"
+      DB_USER: "blog_user"
+      DB_PASSWORD: "12345"
+      DB_HOST: "localhost"
+      DB_PORT: "5432"
+      EMAIL_HOST: "smtp.gmail.com"
+      EMAIL_PORT: "587"
+      EMAIL_HOST_USER: "sanerdonery@gmail.com"
+      EMAIL_HOST_PASSWORD: "hjwjhbknltwlwtyk"
+      EMAIL_USE_TLS: "True"
+      DEFAULT_FROM_EMAIL: "sanerdonery@gmail.com"
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
