@@ -63,4 +63,4 @@ jobs:
     - name: Run Bandit (Security & Code Smells)
       run: |
         python -m pip install bandit --quiet
-        bandit -r accounts/ blog/ config/ 
+        bandit -r accounts/ blog/ config/ -ll
