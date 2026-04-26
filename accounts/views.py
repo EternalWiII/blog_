@@ -7,6 +7,7 @@ from django.contrib.auth.views import (
     PasswordResetConfirmView, PasswordResetCompleteView
 )
 from django.urls import reverse_lazy
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from .forms import RegisterForm, LoginForm, ProfileUpdateForm, UserUpdateForm
 from .forms import CustomPasswordResetForm, CustomSetPasswordForm
@@ -38,6 +39,13 @@ def login_view(request):
             login(request, user)
             messages.success(request, f'Вітаємо, {user.username}!')
             next_url = request.GET.get('next', 'blog:post_list')
+            url_is_safe = url_has_allowed_host_and_scheme(
+                url=next_url,
+                allowed_hosts={request.get_host()},
+                require_https=request.is_secure(),
+            )
+            if not url_is_safe:
+                next_url = 'blog:post_list'
             return redirect(next_url)
     else:
         form = LoginForm()
