@@ -1,7 +1,11 @@
 from django.db import models
 from django.urls import reverse
-from django.utils.text import slugify
 from accounts.models import CustomUser
+
+try:
+    from slugify import slugify
+except ImportError:
+    from django.utils.text import slugify
 
 
 class Tag(models.Model):

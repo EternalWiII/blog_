@@ -4,3 +4,4 @@ Pillow==10.4.0
 django-crispy-forms==2.1
 crispy-bootstrap5==0.7
 python-decouple==3.8
+python-slugify==8.0.4
